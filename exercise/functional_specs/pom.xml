@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>bdd</groupId>
+        <artifactId>example</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>functional_specs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>web</artifactId>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit-dep</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-integration</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Functional Specs -->
+        <dependency>
+            <groupId>org.jbehave</groupId>
+            <artifactId>jbehave-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbehave</groupId>
+            <artifactId>jbehave-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbehave.web</groupId>
+            <artifactId>jbehave-web-selenium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.paranamer</groupId>
+            <artifactId>paranamer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jbehave</groupId>
+            <artifactId>jbehave-core</artifactId>
+            <classifier>resources</classifier>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jbehave.site</groupId>
+            <artifactId>jbehave-site-resources</artifactId>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium.fluent</groupId>
+            <artifactId>fluent-selenium</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>functional_specs</id>
+            <activation>
+                <property>
+                    <name>functional_tests</name>
+                </property>
+            </activation>
+
+            <build>
+
+                <plugins>
+                    <plugin>
+                        <!-- Find free ports to run our server -->
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>reserve-server-port</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>reserve-network-port</goal>
+                                </goals>
+                                <configuration>
+                                    <portNames>
+                                        <portName>cargo.servlet.port</portName>
+                                        <portName>cargo.rmi.port</portName>
+                                        <portName>cargo.tomcat.ajp.port</portName>
+                                    </portNames>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- Find free ports to run our server -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-config-filet</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks name="generePropertiesFile">
+                                        <!-- ensure that the target directory has been created. -->
+                                        <mkdir dir="target/classes/"/>
+                                        <propertyfile file="target/classes/maven.properties"
+                                                      comment="Properties generated in maven.">
+                                            <!-- list or key / value pair to be inserted in the generated properties file.  -->
+                                            <entry key="cargo.servlet.port" value="${cargo.servlet.port}"/>
+                                            <entry key="cargo.rmi.port" value="${cargo.rmi.port}"/>
+                                            <entry key="cargo.tomcat.ajp.port" value="${cargo.tomcat.ajp.port}"/>
+                                            <entry key="context.name" value="${application.name}"/>
+                                        </propertyfile>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jbehave</groupId>
+                        <artifactId>jbehave-maven-plugin</artifactId>
+                        <version>${jbehave.core.version}</version>
+                        <executions>
+
+                            <execution>
+                                <id>run-stories-as-embeddables</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>run-stories-as-embeddables</goal>
+                                </goals>
+                                <configuration>
+                                    <threads>1</threads>
+                                    <includes>
+                                        <include>**/StoryRunner.java</include>
+                                    </includes>
+                                    <excludes/>
+                                    <metaFilters>
+                                        <metaFilter/>
+                                    </metaFilters>
+                                    <systemProperties>
+                                        <property>
+                                            <name>java.awt.headless</name>
+                                            <value>true</value>
+                                        </property>
+                                        <property>
+                                            <name>cargo.servlet.port</name>
+                                            <value>${cargo.servlet.port}</value>
+                                        </property>
+                                    </systemProperties>
+                                    <ignoreFailureInStories>true</ignoreFailureInStories>
+                                    <ignoreFailureInView>false</ignoreFailureInView>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>unpack-view-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>unpack-view-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>log4j</groupId>
+                                <artifactId>log4j</artifactId>
+                                <version>1.2.16</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-cargo</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-cargo</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <container>
+                                <containerId>tomcat7x</containerId>
+                                <output>${project.build.directory}/logs/container.log</output>
+                                <log>${project.build.directory}/logs/cargo.log</log>
+                                <append>false</append>
+                                <zipUrlInstaller>
+                                    <url>
+                                        file:///${settings.localRepository}/org/apache/openejb/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip
+                                    </url>
+                                </zipUrlInstaller>
+                            </container>
+
+                            <deployables>
+                                <deployable>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>web</artifactId>
+                                    <type>war</type>
+                                    <properties>
+                                        <context>/${application.name}</context>
+                                    </properties>
+                                </deployable>
+                            </deployables>
+
+                            <configuration>
+                                <type>standalone</type>
+                                <home>${project.build.directory}/tomcat</home>
+
+                                <properties>
+                                    <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+                                    <cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
+                                    <cargo.tomcat.ajp.port>${cargo.tomcat.ajp.port}</cargo.tomcat.ajp.port>
+                                </properties>
+
+                            </configuration>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.openejb</groupId>
+                                <artifactId>apache-tomcat</artifactId>
+                                <version>${tomcat.version}</version>
+                                <type>zip</type>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>cargo-debug</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <configuration>
+                            <configuration>
+                                <properties>
+                                    <cargo.jvmargs>
+                                        <![CDATA[-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n]]></cargo.jvmargs>
+                                </properties>
+                            </configuration>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

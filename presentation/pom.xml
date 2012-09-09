@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>bdd</groupId>
+   <artifactId>presentation</artifactId>
+   <version>1.0</version>
+   <properties>
+      <java.version>1.6</java.version>
+      <junit.version>4.10</junit.version>
+      <hamcrest.version>1.2.1</hamcrest.version>
+      <mockito.version>1.9.0</mockito.version>
+      <jbehave.core.version>3.6.9</jbehave.core.version>
+      <jbehave.site.version>3.1.1</jbehave.site.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit-dep</artifactId>
+         <version>${junit.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
+         <version>${hamcrest.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-library</artifactId>
+         <version>${hamcrest.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-integration</artifactId>
+         <version>${hamcrest.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
+         <version>1.9.0</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>com.natpryce</groupId>
+         <artifactId>make-it-easy</artifactId>
+         <version>3.1.0</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <!-- Functional Specs -->
+      <dependency>
+         <groupId>org.jbehave</groupId>
+         <artifactId>jbehave-core</artifactId>
+         <version>${jbehave.core.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>com.thoughtworks.paranamer</groupId>
+         <artifactId>paranamer</artifactId>
+         <version>2.5</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jbehave</groupId>
+         <artifactId>jbehave-core</artifactId>
+         <version>${jbehave.core.version}</version>
+         <classifier>resources</classifier>
+         <type>zip</type>
+      </dependency>
+      <dependency>
+         <groupId>org.jbehave.site</groupId>
+         <artifactId>jbehave-site-resources</artifactId>
+         <version>${jbehave.site.version}</version>
+         <type>zip</type>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jdave</groupId>
+         <artifactId>jdave-junit4</artifactId>
+         <version>1.4</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.5</version>
+            <configuration>
+               <encoding>UTF-8</encoding>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+               <source>${java.version}</source>
+               <target>${java.version}</target>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.12.3</version>
+            <configuration>
+               <includes>
+                  <include>**/*Test.java</include>
+                  <include>**/*Spec.java</include>
+               </includes>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.jbehave</groupId>
+            <artifactId>jbehave-maven-plugin</artifactId>
+            <version>${jbehave.core.version}</version>
+            <executions>
+
+               <execution>
+                  <id>run-stories-as-embeddables</id>
+                  <phase>integration-test</phase>
+                  <goals>
+                     <goal>run-stories-as-embeddables</goal>
+                  </goals>
+                  <configuration>
+                     <threads>1</threads>
+                     <includes>
+                        <include>**/StoryRunner.java</include>
+                     </includes>
+                     <excludes/>
+                     <metaFilters>
+                        <metaFilter/>
+                     </metaFilters>
+                     <ignoreFailureInStories>true</ignoreFailureInStories>
+                     <ignoreFailureInView>false</ignoreFailureInView>
+                  </configuration>
+               </execution>
+
+               <execution>
+                  <id>unpack-view-resources</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                     <goal>unpack-view-resources</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <!--<dependencies>-->
+               <!--<dependency>-->
+                  <!--<groupId>log4j</groupId>-->
+                  <!--<artifactId>log4j</artifactId>-->
+                  <!--<version>1.2.16</version>-->
+               <!--</dependency>-->
+               <!--<dependency>-->
+                  <!--<groupId>org.hamcrest</groupId>-->
+                  <!--<artifactId>hamcrest-core</artifactId>-->
+                  <!--<version>${hamcrest.version}</version>-->
+               <!--</dependency>-->
+               <!--<dependency>-->
+                  <!--<groupId>org.hamcrest</groupId>-->
+                  <!--<artifactId>hamcrest-integration</artifactId>-->
+                  <!--<version>${hamcrest.version}</version>-->
+               <!--</dependency>-->
+               <!--<dependency>-->
+                  <!--<groupId>org.hamcrest</groupId>-->
+                  <!--<artifactId>hamcrest-library</artifactId>-->
+                  <!--<version>${hamcrest.version}</version>-->
+               <!--</dependency>-->
+            <!--</dependencies>-->
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.0</version>
+            <executions>
+               <execution>
+                  <id>attach-descriptor</id>
+                  <goals>
+                     <goal>attach-descriptor</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <reportPlugins>
+                  <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-surefire-report-plugin</artifactId>
+                     <version>2.12.3 </version>
+                  </plugin>
+
+
+                  <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-project-info-reports-plugin</artifactId>
+                     <version>2.4</version>
+                     <configuration>
+                        <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                     </configuration>
+                  </plugin>
+
+                </reportPlugins>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+
+</project>

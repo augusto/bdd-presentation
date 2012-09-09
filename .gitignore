@@ -1,0 +1,10 @@
+target
+.metadata
+.classpath
+.project
+*/.settings/
+*.iml
+*.iws
+*.ipr
+*/.idea
+.clover
