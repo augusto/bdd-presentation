@@ -4,23 +4,32 @@
 <head>
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/example.css" type="text/css" />
    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-1.8.1.js"></script>
+   <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/numeric.jquery.js"></script>
    <script>
    $( function() {
-      $("#submit").click(function () {
-         var number = encodeURIComponent($("#number").val());
-         var calculateUrl = "${pageContext.request.contextPath}/app/fibonacci/" + number;
-         $("#result").load(calculateUrl);
-      });
+       $('#fibonacciCalculatorForm').submit(function() {
+          var number = $("#number").val();
+          if( ! number || $.trim(number) === "") {
+              number = "empty";
+          }
+
+          var urlEncodedNumber = encodeURIComponent(number)
+          var calculateUrl = "${pageContext.request.contextPath}/app/fibonacci/" + urlEncodedNumber;
+          $("#result").load(calculateUrl);
+
+          return false;
+       });
+
    });
    </script>
    <title>The Ultimate Fibonacci Number Calculator!</title>
 </head>
 <body>
    <h1>Calculate Fibonacci Number</h1>
-   <form>
+   <form id="fibonacciCalculatorForm">
    <p>Enter  a number to calculate its fibonacci number</p>
    <input id="number" type="text" name="number" />
-   <input id="submit" type="button" value="Calculate" />
+   <input id="submit" type="submit" value="Calculate" />
    </form>
 
    <p id="result"/>
